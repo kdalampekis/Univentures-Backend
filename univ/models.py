@@ -2,13 +2,13 @@ from django.db import models
 
 # Create your models here.
 
+
 class University(models.Model):
     uni_name = models.CharField(max_length=255)
 
 
-class Organizers(models.Model):
-    org_first_name = models.CharField(max_length=255)
-    org_last_name = models.CharField(max_length=255)
+class Organization(models.Model):
+    org_name = models.CharField(max_length=255)
     org_img = models.SlugField(null=True)
 
 
@@ -40,14 +40,13 @@ class EventsPositions(models.Model):
         unique_together = (('events', 'postitions'),)
 
 
-class EventsOrganizers(models.Model):
+class EventsOrganization(models.Model):
     events = models.ForeignKey('Events', on_delete=models.CASCADE)
-    organizers = models.ForeignKey(Organizers, on_delete=models.CASCADE)
-    comment = models.TextField()
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
     class Meta:
-        db_table = 'eventsorganizers'
-        unique_together = (('events', 'organizers'),)
+        db_table = 'eventsorganization'
+        unique_together = (('events', 'organization'),)
 
 
 class Events(models.Model):
@@ -58,11 +57,11 @@ class Events(models.Model):
     capacity = models.IntegerField()
     price = models.IntegerField()
     rating = models.IntegerField()
-    img_src = models.SlugField()
-    video_src = models.SlugField()
+    img_src = models.SlugField(default='-')
+    video_src = models.SlugField(default='https://www.youtube.com/embed/KtRHV9gH83U')
     categories = models.ManyToManyField(Categories, through=EventsCategories, null=True)
     positions = models.ManyToManyField(Postitions, through=EventsPositions, null=True)
-    organizers = models.ManyToManyField(Organizers, through=EventsOrganizers, null=True)
+    organizers = models.ManyToManyField(Organization, through=EventsOrganization, null=True)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
 
 
@@ -87,8 +86,9 @@ class User(models.Model):
 
 class Volunteer(models.Model):
     position = models.CharField(max_length=255)
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    heading = models.TextField(default='-')
+    comment = models.TextField(default='-')
 
 
 class Attendee(models.Model):
