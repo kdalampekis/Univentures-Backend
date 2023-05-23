@@ -12,6 +12,8 @@ class Organization(models.Model):
 
 class Categories(models.Model):
     categ_name = models.CharField(max_length=255)
+    categ_apr = models.CharField(max_length=255, default='-')
+    categ_desc = models.TextField(default='-')
 
 
 class EventsCategories(models.Model):

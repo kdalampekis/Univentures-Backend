@@ -1,5 +1,6 @@
 delete from eventscategories where true;
 delete from eventsorganization where true;
+delete from eventsuser where true;
 delete from uni_faq where true;
 delete from uni_events where true;
 delete from uni_university where true;
@@ -8,6 +9,8 @@ delete from uni_postitions where true;
 delete from uni_volunteer where true;
 delete from uni_user where true;
 delete from uni_organization where true;
+
+
 
 
 insert into uni_university
@@ -19,51 +22,56 @@ values (2, 'NTUA');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (1, 'PlanBiz', 'PlanBiz is an immersive business event that brings together industry leaders to explore innovative strategies and foster collaborative networking'
-, 'Marousi, Athens', '25-05-2023 10:00:00', 100, 0 ,4.5,'../../images/planbiz.jpeg', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Marousi, Athens', '2023-05-25 10:00:00', 100, 0 ,4.5,'../../images/planbiz.jpeg', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (2, 'ThinkBiz', 'ThinkBiz is an inspiring event that brings together visionary thinkers and entrepreneurs to explore innovative ideas and drive business growth'
-, 'Aegaleo, Athens', '15-05-2023 10:00:00', 100, 0 , 4.9,'../../images/thinkbiz.png', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Aegaleo, Athens', '2023-05-15 10:00:00', 100, 0 , 4.9,'../../images/thinkbiz.png', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (3, 'TechConnect', 'TechConnect is a dynamic networking event that connects technology enthusiasts, professionals, and innovators to foster collaboration and drive technological advancements'
-, 'Keramikos, Athens', '2-05-2023 10:00:00', 75, 0 , 4.9,'../../images/techconnect.jpeg', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Keramikos, Athens', '2023-05-02 10:00:00', 75, 0 , 4.9,'../../images/techconnect.jpeg', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (4, 'Open Conference', 'Open Conference, hosted by OpenAI, is a pioneering event that showcases groundbreaking advancements in artificial intelligence and promotes open collaboration and knowledge sharing'
-, 'Megaro Mousikis, Athens', '2-05-2023 10:00:00', 500, 50 , 5,'../../images/openai.png', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Megaro Mousikis, Athens', '2023-05-02 10:00:00', 500, 50 , 5,'../../images/openai.png', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (5, 'TedxAUEB Pangea Main Event', 'TEDxAUEB Pangea event brought together diverse speakers to share ideas on bridging global challenges through innovation and collaboration.'
-, 'Viktoria, Athens', '25-05-2023 10:00:00', 200, 10 , 3.5,'../../images/pangea.webp', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Viktoria, Athens', '2023-05-25 10:00:00', 200, 10 , 3.5,'../../images/pangea.webp', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (6, 'TedxNTUA Play Main Event', 'TEDxNTUA Play Main Event is an engaging platform where creative minds converge to explore the transformative power of play and its impact on innovation and personal growth'
-, 'Zografou, Athens', '15-05-2023 10:00:00', 200, 10 , 4.5,'../../images/play.jpeg', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Zografou, Athens', '2023-05-15 10:00:00', 200, 10 , 4.5,'../../images/play.jpeg', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (7, 'FSDET Sustainability', 'FSDET Sustainability is a forward-thinking conference that addresses the pressing global challenges of sustainability, fostering discussions and solutions for a more environmentally conscious future.'
-, 'Keramikos, Athens', '30-05-2023 10:00:00', 200, 10 , 4.5,'../../images/fsdet.png', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Keramikos, Athens', '2023-05-30 10:00:00', 200, 10 , 4.5,'../../images/fsdet.png', 1, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 
 insert into uni_events(id, title, description, location, timestamp, capacity, price, rating, img_src, university_id, video_src)
 values (8, 'Party at NTUA', 'Party at NTUA is an exciting and vibrant event where students and guests come together to celebrate, unwind, and create unforgettable memories'
-, 'Zografou, Athens', '30-05-2023 23:00:00', 500, 10 , 5.0,'../../images/ntua_party.jpeg', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
+, 'Zografou, Athens', '2023-05-30 23:00:00', 500, 10 , 5.0,'../../images/ntua_party.jpeg', 2, 'https://www.youtube.com/embed/KtRHV9gH83U');
 
 
 
 insert into uni_categories
-values (1, 'StartUps');
+values (1, 'StartUps', 'StartUps', 'Networking events that connect entrepreneurs with investors, mentors, and other like-minded individuals to discuss business ideas, strategies, and funding opportunities.
+');
 
 insert into uni_categories
-values (2, 'Tech');
+values (2, 'Tech', 'Technology', 'Conferences and exhibitions that showcase the latest advancements in technology, including emerging fields such as artificial intelligence, blockchain, and virtual reality.
+');
 
 insert into uni_categories
-values (3, 'TEDxEvents');
+values (3, 'TEDxEvents', 'TEDxEvents', 'Inspirational speeches by thought leaders from various fields, covering topics ranging from technology, science, and culture to global issues and personal growth.
+');
+
 
 insert into uni_categories
-values (4, 'Uni');
+values (4, 'Uni', 'University', 'Educational events hosted by universities, featuring speakers, workshops, and networking opportunities for students, professionals, and academics, covering various fields of study and research.
+');
 
 insert into eventscategories
 values (1, 1, 1);
