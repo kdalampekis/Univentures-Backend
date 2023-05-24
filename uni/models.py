@@ -77,6 +77,7 @@ class User(models.Model):
 
 
 class EventsUser(models.Model):
+    user_rating = models.IntegerField(default=3)
     events = models.ForeignKey(Events, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
@@ -100,4 +101,13 @@ class Faq(models.Model):
     question = models.TextField()
     answer = models.TextField()
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
+
+
+class UsersCategories(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    categories = models.ForeignKey(Categories, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'userpreferences'
+        unique_together = (('user', 'categories'),)
 

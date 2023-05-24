@@ -204,9 +204,23 @@ insert into eventsorganization
 values (8, 8, 7);
 
 insert into eventsuser
-values (1, 5, 1);
+values (1, 5, 1, 5);
 
 insert into eventsuser
-values (2, 5, 2);
+values (2, 5, 2, 5);
+
+insert into userpreferences
+values (1, 1, 1);
+
+insert into userpreferences
+values (2, 2, 1);
+
+insert into userpreferences
+values (3, 3, 2);
+
+insert into userpreferences
+values (4, 4, 2);
+
+
 
 
