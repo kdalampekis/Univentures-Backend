@@ -1,10 +1,12 @@
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Events, Categories
+from .models import Events, Categories, EventsOrganization, EventsCategories
 from django.db.models import Max
 from django.db.models import Prefetch
-
+from django.core import serializers
+from django.http import JsonResponse
+from django.utils import timezone
 
 @api_view(['GET'])
 def get_popular(request):
@@ -69,5 +71,70 @@ def get_events_by_category(request):
     return Response(result)
 
 
+@api_view(['GET'])
+def get_all_categories(request):
+    categories = Categories.objects.all()
+
+    categories_dict = []
+
+    for category in categories:
+        categories_dict.append({
+                "value": category.categ_name,
+                "label": category.categ_apr})
+
+    return Response(categories_dict)
+
+
+@api_view(['GET'])
+def get_locations(request):
+    events = Events.objects.all()
+    locations_found = []
+    events_locations = []
+
+    for event in events:
+        if event.location not in locations_found:
+            events_locations.append(
+                {
+                    "value": event.location,
+                    "label": event.location,
+                }
+            )
+            locations_found.append(event.location)
+
+    return Response(events_locations)
+
+
+@api_view(['GET'])
+def get_events(request):
+    events = Events.objects.all()
+    serialized_events = serializers.serialize('python', events)
+
+    event_list = []
+    for event_data in serialized_events:
+        event = event_data['fields']
+        event['id'] = event_data['pk']
+        event_organizers = EventsOrganization.objects.filter(events=event_data['pk']).first()
+        event['company'] = event_organizers.organization.org_name if event_organizers else None
+        event_categories = EventsCategories.objects.filter(events=event_data['pk'])
+        event['category'] = [categories.categories.categ_name for categories in event_categories]
+
+        # Format the date
+        timestamp = event['timestamp']
+        formatted_date = timezone.localtime(timestamp).strftime('%d %b %Y')
+        event['date'] = formatted_date
+
+        # Include only specific fields
+        modified_event = {
+            'id': event['id'],
+            'name': event['title'],
+            'location': event['location'],
+            'date': event['date'],
+            'company': event['company'],
+            'imageSrc': event['img_src'],
+            'category': event['category'],
+        }
+        event_list.append(modified_event)
+
+    return Response(event_list)
 
 
