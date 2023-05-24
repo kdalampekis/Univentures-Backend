@@ -22,7 +22,7 @@ def get_popular(request):
             'location': event.location,
             'price': event.price,
             'rating': event.rating,
-            'img_src': event.img_src,
+            'imgSrc': event.img_src,
         })
 
     return Response(serialized_events)
@@ -39,6 +39,7 @@ def get_first_four_categories(request):
             {
                 "id": category.id,
                 "name": category.categ_name,
+                "full": category.categ_apr,
                 "desc": category.categ_desc,
             }
         ]
@@ -67,3 +68,7 @@ def get_events_by_category(request):
             result[category.categ_name].append(event_data)
 
     return Response(result)
+
+
+
+

@@ -9,6 +9,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.model_selection import GridSearchCV
 import sqlite3
 
+
 # Assuming you have an SQLite database file with appropriate tables for user data and event data
 def fetch_user_data_from_database():
     # Connect to the SQLite database
@@ -39,6 +40,7 @@ def fetch_user_data_from_database():
 
     return user_preferences, user_ratings
 
+
 def fetch_event_data_from_database():
     # Connect to the SQLite database
     conn = sqlite3.connect('your_database.db')
@@ -64,6 +66,7 @@ def fetch_event_data_from_database():
     conn.close()
 
     return event_ids, event_descriptions, event_categories, event_locations
+
 
 def update_model():
     # Fetch user data from the SQLite database
