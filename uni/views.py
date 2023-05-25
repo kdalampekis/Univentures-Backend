@@ -207,14 +207,7 @@ def get_vol_events(request):
         event = event_data['fields']
         event['id'] = event_data['pk']
         event_categories = EventsCategories.objects.filter(events=event_data['pk'])
-        event['category'] = [categories.categories.categ_name for categories in event_categories]
-
-        # Format the date
-        timestamp = event['timestamp']
-        formatted_date = timezone.localtime(timestamp).strftime('%d %b %Y')
-        event['date'] = formatted_date
-
-        # Include only specific fields
+        event['category'] = [categories.categories.categ_apr for categories in event_categories]
         modified_event = {
             'id': event['id'],
             'title': event['title'],
