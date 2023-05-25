@@ -159,7 +159,9 @@ def get_event(request, event_id):
         'location': event['location'],
         'pricingText': event['price'],
         'videoSrc': event['video_src'],
-        'date':  event['date']
+        'date':  event['date'],
+        'price': event['price'],
+
     }
     return Response(event_found)
 
