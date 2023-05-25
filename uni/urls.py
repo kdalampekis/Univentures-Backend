@@ -9,9 +9,6 @@ urlpatterns = [
     path('get_all_categories/', views.get_all_categories),
     path('get_locations/', views.get_locations),
     path('get_events/', views.get_events),
-
-
-
-
+    path('get_event/<int:event_id>/', views.get_event),
 
 ]

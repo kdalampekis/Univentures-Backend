@@ -7,6 +7,8 @@ from django.db.models import Prefetch
 from django.core import serializers
 from django.http import JsonResponse
 from django.utils import timezone
+from django.shortcuts import get_object_or_404
+
 
 @api_view(['GET'])
 def get_popular(request):
@@ -137,4 +139,27 @@ def get_events(request):
 
     return Response(event_list)
 
+
+@api_view()
+def get_event(request, event_id):
+    event = get_object_or_404(Events, pk=event_id)
+    serialized_event = serializers.serialize('python', [event]) # event is passed as list to make it iterable
+    event_data = serialized_event[0] # We need to get the first object of serialized data because serialize returns a list
+    event = event_data['fields']
+    print(event)
+    timestamp = event['timestamp']
+    formatted_date = timezone.localtime(timestamp).strftime('%d %b %Y')
+    event['date'] = formatted_date
+
+    event_found = {
+        'id': event_id,
+        'imageSrc': event['img_src'],
+        'title': event['title'],
+        'description': event['description'],
+        'location': event['location'],
+        'pricingText': event['price'],
+        'videoSrc': event['video_src'],
+        'date':  event['date']
+    }
+    return Response(event_found)
 
