@@ -74,6 +74,7 @@ class User(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=255)
     img_src = models.SlugField(default='-')
+    location = models.CharField(max_length=255, default='-')
 
 
 class EventsUser(models.Model):
@@ -110,4 +111,10 @@ class UsersCategories(models.Model):
     class Meta:
         db_table = 'userpreferences'
         unique_together = (('user', 'categories'),)
+
+
+class Features(models.Model):
+    name = models.CharField(max_length=255)
+    desc = models.CharField(max_length=255)
+    event = models.ForeignKey(Events, on_delete=models.CASCADE)
 

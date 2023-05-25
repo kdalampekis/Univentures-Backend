@@ -9,6 +9,8 @@ delete from uni_postitions where true;
 delete from uni_volunteer where true;
 delete from uni_user where true;
 delete from uni_organization where true;
+delete from userpreferences where true;
+delete from uni_features where true;
 
 
 
@@ -142,10 +144,10 @@ values (4, 'Who are the speakers at the TEDxAUEB event Pangea?',
         'Their talks will revolve around the theme of the event, exploring ways to reconnect our world and build a better future for all.', 5);
 
 insert into uni_user
-values (1, 'Charlotte', 'Hale', '08-01-2002', 'F', '-', 'ch@example.com', '-', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80');
+values (1, 'Charlotte', 'Hale', '08-01-2002', 'F', '-', 'ch@example.com', '-', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80', 'Keramikos, Athens');
 
 insert into uni_user
-values (2, 'Adam', 'Cuppy', '08-01-2002', 'M', '-', 'ac@example.com', '-', 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80');
+values (2, 'Adam', 'Cuppy', '08-01-2002', 'M', '-', 'ac@example.com', '-', 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80', 'Megaro Mousikis, Athens');
 
 
 
@@ -222,5 +224,90 @@ insert into userpreferences
 values (4, 4, 2);
 
 
+-- Event 1 - PlanBiz
+insert into uni_features
+values (1, 'Speakers', '250+', 1);
+
+insert into uni_features
+values (2, 'Attendees', '1000+', 1);
+
+insert into uni_features
+values (3, 'Workshops', '50+', 1);
+
+-- Event 2 - ThinkBiz
+insert into uni_features
+values (4, 'Elite Speakers', '15+', 2);
+
+insert into uni_features
+values (5, 'Engaged Attendees', '500+', 2);
+
+insert into uni_features
+values (6, 'Interactive Workshops', '10+', 2);
+
+
+-- Event 3 - TechConnect
+insert into uni_features
+values (7, 'Expert Speakers', '20+', 3);
+
+insert into uni_features
+values (8, 'Enthusiastic Attendees', '300+', 3);
+
+insert into uni_features
+values (9, 'Informative Workshops', '8+', 3);
+
+
+-- Event 4 - Open Conference
+insert into uni_features
+values (10, 'Keynote Speakers', '40+', 4);
+
+insert into uni_features
+values (11, 'Participants', '1000+', 4);
+
+insert into uni_features
+values (12, 'Breakout Sessions', '20+', 4);
+
+
+-- Event 5 - TedxAUEB Pangea Main Event
+insert into uni_features
+values (13, 'Diverse Speakers', '12+', 5);
+
+insert into uni_features
+values (14, 'Global Attendees', '150+', 5);
+
+insert into uni_features
+values (15, 'Inspiring Workshops', '5+', 5);
+
+
+-- Event 6 - TedxNTUA Play Main Event
+insert into uni_features
+values (16, 'Creative Speakers', '8+', 6);
+
+insert into uni_features
+values (17, 'Energetic Attendees', '100+', 6);
+
+insert into uni_features
+values (18, 'Innovative Workshops', '3+', 6);
+
+
+-- Event 7 - FSDET Sustainability
+insert into uni_features
+values (19, 'Keynote Speakers', '10+', 7);
+
+insert into uni_features
+values (20, 'Green Companies', '200+', 7);
+
+insert into uni_features
+values (21, 'Action-oriented Workshops', '6+', 7);
+
+
+-- Event 8 - Party at NTUA
+insert into uni_features
+values (22, 'Performances', '10+', 8);
+
+insert into uni_features
+values (23, 'Attendees', '1000+', 8);
+
+insert into uni_features
+values (24, 'DJs', '5+', 8);
 
 
