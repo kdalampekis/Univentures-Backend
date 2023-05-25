@@ -10,5 +10,5 @@ urlpatterns = [
     path('get_locations/', views.get_locations),
     path('get_events/', views.get_events),
     path('get_event/<int:event_id>/', views.get_event),
-
+    path('get_event_features/<int:event_id>/', views.get_event_features),
 ]
