@@ -12,5 +12,6 @@ urlpatterns = [
     path('get_event/<int:event_id>/', views.get_event),
     path('get_event_features/<int:event_id>/', views.get_event_features),
     path('get_event_faq/<int:event_id>/', views.get_event_faq),
+    path('get_vol_events/', views.get_vol_events),
 
 ]

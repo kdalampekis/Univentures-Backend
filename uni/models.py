@@ -75,6 +75,7 @@ class User(models.Model):
     phone = models.CharField(max_length=255)
     img_src = models.SlugField(default='-')
     location = models.CharField(max_length=255, default='-')
+    university = models.ForeignKey(University, on_delete=models.CASCADE, null=True)
 
 
 class EventsUser(models.Model):

@@ -196,3 +196,32 @@ def get_event_faq(request, event_id):
         faqs_list.append(features_data)
 
     return Response(faqs_list)
+
+@api_view(['GET'])
+def get_vol_events(request):
+    events = Events.objects.all()[:5]
+    serialized_events = serializers.serialize('python', events)
+
+    event_list = []
+    for event_data in serialized_events:
+        event = event_data['fields']
+        event['id'] = event_data['pk']
+        event_categories = EventsCategories.objects.filter(events=event_data['pk'])
+        event['category'] = [categories.categories.categ_name for categories in event_categories]
+
+        # Format the date
+        timestamp = event['timestamp']
+        formatted_date = timezone.localtime(timestamp).strftime('%d %b %Y')
+        event['date'] = formatted_date
+
+        # Include only specific fields
+        modified_event = {
+            'id': event['id'],
+            'title': event['title'],
+            'description': event['description'],
+            'imageSrc': event['img_src'],
+            'subtitle': event['category'],
+        }
+        event_list.append(modified_event)
+
+    return Response(event_list)
