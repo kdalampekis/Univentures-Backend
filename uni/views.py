@@ -1,7 +1,7 @@
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Events, Categories, EventsOrganization, EventsCategories, Features
+from .models import Events, Categories, EventsOrganization, EventsCategories, Features, Faq
 from django.db.models import Max
 from django.db.models import Prefetch
 from django.core import serializers
@@ -179,3 +179,20 @@ def get_event_features(request, event_id):
         features_list.append(features_data)
 
     return Response(features_list)
+
+
+@api_view()
+def get_event_faq(request, event_id):
+    event = get_object_or_404(Events, pk=event_id)
+    faqs = Faq.objects.filter(event=event)
+
+    faqs_list = []
+
+    for faq in faqs:
+        features_data = {
+            'question': faq.question,
+            'answer': faq.answer
+        }
+        faqs_list.append(features_data)
+
+    return Response(faqs_list)
