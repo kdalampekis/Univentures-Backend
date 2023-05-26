@@ -89,10 +89,20 @@ class EventsUser(models.Model):
 
 
 class Volunteer(models.Model):
+    PENDING = 'P'
+    SUCCESS = 'S'
+    FAIL = 'F'
+
+    CHOICES = [
+        (PENDING, 'Pending'),
+        (SUCCESS, 'Success'),
+        (FAIL, 'Fail')
+    ]
+
     position = models.ForeignKey(Postitions, on_delete=models.PROTECT)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    heading = models.TextField(default='-')
     comment = models.TextField(default='-')
+    status = models.CharField(max_length=1, choices=CHOICES, default=PENDING)
 
 
 class Attendee(models.Model):
@@ -118,4 +128,10 @@ class Features(models.Model):
     name = models.CharField(max_length=255)
     desc = models.CharField(max_length=255)
     event = models.ForeignKey(Events, on_delete=models.CASCADE)
+
+
+class Testimonials(models.Model):
+    comment_title = models.TextField(default='-')
+    comment = models.TextField(default='-')
+    volunteer = models.ForeignKey(Volunteer, on_delete=models.PROTECT, null=True)
 

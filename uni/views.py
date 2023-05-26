@@ -1,14 +1,13 @@
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Events, Categories, EventsOrganization, EventsCategories, Features, Faq
+from .models import Events, Categories, EventsOrganization, EventsCategories, Features, Faq, Postitions, Testimonials, Volunteer
 from django.db.models import Max
-from django.db.models import Prefetch
 from django.core import serializers
-from django.http import JsonResponse
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
-
+from django.core.exceptions import ObjectDoesNotExist
+import random
 
 @api_view(['GET'])
 def get_popular(request):
@@ -218,3 +217,81 @@ def get_vol_events(request):
         event_list.append(modified_event)
 
     return Response(event_list)
+
+
+@api_view()
+def get_pos_shortlist(request, event_id):
+    event = get_object_or_404(Events, pk=event_id)
+    positions = Postitions.objects.filter(event=event).all()[:6]
+
+    pos_list = []
+
+    for position in positions:
+        pos_data = {
+            'value': position.pos_name,
+            'label': position.pos_name
+        }
+        pos_list.append(pos_data)
+
+    return Response(pos_list)
+
+@api_view()
+def get_pos_longlist(request, event_id):
+    event = get_object_or_404(Events, pk=event_id)
+    positions = Postitions.objects.filter(event=event).all()[:6]
+
+    pos_list = []
+
+    for position in positions:
+        pos_data = {
+            'title': position.pos_name,
+            'description': position.pos_description,
+            'imageSrc': position.pos_img,
+        }
+        pos_list.append(pos_data)
+
+    return Response(pos_list)
+
+
+
+@api_view(['GET'])
+def get_testimonials(request, event_id):
+    try:
+        # Get all volunteer positions related to the event
+        positions = Postitions.objects.filter(event__id=event_id)
+
+        # Get all volunteers for these positions
+        volunteers = Volunteer.objects.filter(position__in=positions)
+
+
+        # Get all testimonials related to these volunteers
+        testimonials = Testimonials.objects.filter(volunteer__in=volunteers)
+
+
+
+        # Ensure we have at least 2 testimonials
+        if testimonials.count() < 2:
+            return Response({"message": "Not enough testimonials found for this event"}, status=404)
+
+        # Select two random testimonials
+        selected_testimonials = random.sample(list(testimonials), 2)
+
+        result = []
+        for testimonial in selected_testimonials:
+            user = testimonial.volunteer.user
+            position = testimonial.volunteer.position
+            result.append({
+                "profileImageSrc": user.img_src,
+                "heading": testimonial.comment_title,
+                "quote": testimonial.comment,
+                "customerName": f"{user.first_name} {user.last_name}",
+                "customerTitle": position.pos_name,
+            })
+
+        return Response(result, status=200)
+
+    except ObjectDoesNotExist:
+        return Response({"message": "No testimonials found for this event"}, status=404)
+
+    except ValueError:
+        return Response({"message": "An error occurred while processing the request"}, status=500)
