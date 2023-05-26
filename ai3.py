@@ -10,7 +10,7 @@ from sklearn.decomposition import TruncatedSVD
 
 # Connect to the SQLite database
 def connect_to_database():
-    return sqlite3.connect('/db.sqlite3')
+    return sqlite3.connect('db.sqlite3')
 
 # Fetch user preferences from the database for the specified user
 def fetch_user_preferences_from_database(user_id):

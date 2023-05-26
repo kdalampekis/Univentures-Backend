@@ -9,7 +9,7 @@ from sklearn.preprocessing import OneHotEncoder
 # Connect to the SQLite database
 def connect_to_database():
     try:
-        return sqlite3.connect('/db.sqlite3')
+        return sqlite3.connect('db.sqlite3')
     except sqlite3.Error as e:
         print(e)
         sys.exit(1)
