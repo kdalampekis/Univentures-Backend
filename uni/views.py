@@ -1,13 +1,17 @@
 from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Events, Categories, EventsOrganization, EventsCategories, Features, Faq, Postitions, Testimonials, Volunteer
+from .models import Events, Categories, EventsOrganization, \
+    EventsCategories, Features, Faq, Postitions, Testimonials, Volunteer, User, University
 from django.db.models import Max
 from django.core import serializers
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 import random
+from .serializers import UserSerializer, UsersCategoriesSerializer, VolunteerSerializer
+from rest_framework import status
+
 
 @api_view(['GET'])
 def get_popular(request):
@@ -222,33 +226,35 @@ def get_vol_events(request):
 @api_view()
 def get_pos_shortlist(request, event_id):
     event = get_object_or_404(Events, pk=event_id)
-    positions = Postitions.objects.filter(event=event).all()[:6]
+    positions = Postitions.objects.filter(event=event).all()
 
     pos_list = []
 
     for position in positions:
-        pos_data = {
-            'value': position.pos_name,
-            'label': position.pos_name
-        }
-        pos_list.append(pos_data)
+        if position.id < 50:
+            pos_data = {
+                'value': position.pos_name,
+                'label': position.pos_name
+            }
+            pos_list.append(pos_data)
 
     return Response(pos_list)
 
 @api_view()
 def get_pos_longlist(request, event_id):
     event = get_object_or_404(Events, pk=event_id)
-    positions = Postitions.objects.filter(event=event).all()[:6]
+    positions = Postitions.objects.filter(event=event).all()
 
     pos_list = []
 
     for position in positions:
-        pos_data = {
-            'title': position.pos_name,
-            'description': position.pos_description,
-            'imageSrc': position.pos_img,
-        }
-        pos_list.append(pos_data)
+        if position.id < 50:
+            pos_data = {
+                'title': position.pos_name,
+                'description': position.pos_description,
+                'imageSrc': position.pos_img,
+            }
+            pos_list.append(pos_data)
 
     return Response(pos_list)
 
@@ -280,14 +286,14 @@ def get_testimonials(request, event_id):
         for testimonial in selected_testimonials:
             user = testimonial.volunteer.user
             position = testimonial.volunteer.position
-            result.append({
-                "profileImageSrc": user.img_src,
-                "heading": testimonial.comment_title,
-                "quote": testimonial.comment,
-                "customerName": f"{user.first_name} {user.last_name}",
-                "customerTitle": position.pos_name,
-            })
-
+            if testimonial.volunteer.status == 'S':
+                result.append({
+                    "profileImageSrc": user.img_src,
+                    "heading": testimonial.comment_title,
+                    "quote": testimonial.comment,
+                    "customerName": f"{user.first_name} {user.last_name}",
+                    "customerTitle": position.pos_name,
+                })
         return Response(result, status=200)
 
     except ObjectDoesNotExist:
@@ -295,3 +301,105 @@ def get_testimonials(request, event_id):
 
     except ValueError:
         return Response({"message": "An error occurred while processing the request"}, status=500)
+
+
+@api_view(['POST'])
+def signup(request):
+    serializer = UserSerializer(data=request.data)
+
+    if User.objects.filter(email=request.data['email']).exists():
+        return Response({'message': 'A user with this email already exists.'}, status=200)
+
+    if serializer.is_valid():
+        # Hash the user's password
+        password = serializer.validated_data.get('password')
+        serializer.validated_data['password'] = password
+
+        uni = request.data.get('uni', [])
+        university = University.objects.get(pk=uni['id'])
+        serializer.validated_data['university'] = university
+
+        serializer.save()
+
+        category_names = request.data.get('categories', [])
+
+        for category_name in category_names:
+            category = Categories.objects.get(categ_name=category_name['value'])
+            user = User.objects.get(email=request.data['email'])
+
+            category_data = {
+                'user': user.id,
+                'categories': category.id
+            }
+
+            category_serializer = UsersCategoriesSerializer(data=category_data)
+
+            if category_serializer.is_valid():
+                category_serializer.save()
+            else:
+                return Response(category_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def get_uni(request):
+    unis = University.objects.all()
+    university = []
+
+    for uni in unis:
+        university.append(
+            {
+                "id": uni.id,
+                "value": uni.uni_name,
+                "label": uni.uni_name,
+
+            }
+            )
+
+    return Response(university)
+
+
+@api_view(['POST'])
+def login(request):
+
+    if User.objects.filter(email=request.data['email']).exists():
+
+        user = User.objects.get(email=request.data['email'])
+
+        if user.email == request.data['email']:
+            if user.password == request.data['password']:
+                return Response({'message': 'Success', 'id': user.id}, status=200)
+            else:
+                return Response({'message': 'Incorrect password'}, status=500)
+    else:
+        return Response({'message': 'User doesnt exist'}, status=500)
+
+
+@api_view(['POST'])
+def volunteer(request):
+
+    position_names = request.data.get('selectedVolOptions', [])
+
+    for pos_name in position_names:
+        position = Postitions.objects.get(pos_name=pos_name['value'])
+        user = User.objects.get(pk=request.data['user_id'])
+        comment = request.data['message']
+
+        volunteer_data = {
+        'position': position.id,
+        'user': user.id,
+        'comment': comment
+        }
+
+        vol_serializer = VolunteerSerializer(data=volunteer_data)
+
+        if vol_serializer.is_valid():
+            vol_serializer.save()
+        else:
+            return Response(vol_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'message': 'Received'}, status=200)
+
+

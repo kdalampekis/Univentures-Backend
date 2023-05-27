@@ -16,5 +16,9 @@ urlpatterns = [
     path('get_pos_shortlist/<int:event_id>/', views.get_pos_shortlist),
     path('get_pos_longlist/<int:event_id>/', views.get_pos_longlist),
     path('get_testimonials/<int:event_id>/', views.get_testimonials),
+    path('signup/', views.signup),
+    path('get_uni/', views.get_uni),
+    path('login/', views.login),
+    path('volunteer/', views.volunteer),
 
 ]

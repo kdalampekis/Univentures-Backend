@@ -14,7 +14,6 @@ delete from uni_features where true;
 delete from uni_testimonials where true;
 
 
-
 insert into uni_university
 values (1, 'AUEB');
 
@@ -124,22 +123,22 @@ values (6, 'Data Analyst', 'Analyze data collected during PlanBiz event and prov
 --ThinkBiz
 
 insert into uni_postitions
-values (7, 'Innovation Workshop Facilitator', 'Lead interactive workshops to foster innovative thinking and idea generation', '../../images/workshop-icon.svg', 2);
+values (7, 'Innovation Workshop Facilitator', 'Lead interactive workshops to foster innovative thinking and idea generation', '../../images/support-icon.svg', 2);
 
 insert into uni_postitions
-values (8, 'Startup Mentor', 'Provide guidance and mentorship to aspiring entrepreneurs attending ThinkBiz event', '../../images/mentor-icon.svg', 2);
+values (8, 'Startup Mentor', 'Provide guidance and mentorship to aspiring entrepreneurs attending ThinkBiz event', '../../images/shield-icon.svg', 2);
 
 insert into uni_postitions
-values (9, 'Marketing Strategist', 'Develop marketing strategies and campaigns to promote ThinkBiz event', '../../images/marketing-icon.svg', 2);
+values (9, 'Marketing Strategist', 'Develop marketing strategies and campaigns to promote ThinkBiz event', '../../images/customize-icon.svg', 2);
 
 insert into uni_postitions
-values (10, 'Speaker Liaison', 'Coordinate with speakers and ensure smooth communication before and during ThinkBiz event', '../../images/liaison-icon.svg', 2);
+values (10, 'Speaker Liaison', 'Coordinate with speakers and ensure smooth communication before and during ThinkBiz event', '../../images/reliable-icon.svg', 2);
 
 insert into uni_postitions
-values (11, 'Event Photographer', 'Capture memorable moments and document the ThinkBiz event through photography', '../../images/photography-icon.svg', 2);
+values (11, 'Event Photographer', 'Capture memorable moments and document the ThinkBiz event through photography', '../../images/fast-icon.svg', 2);
 
 insert into uni_postitions
-values (12, 'Graphic Designer', 'Design visually appealing promotional materials and graphics for ThinkBiz event', '../../images/designer-icon.svg', 2);
+values (12, 'Graphic Designer', 'Design visually appealing promotional materials and graphics for ThinkBiz event', '../../images/simple-icon.svg', 2);
 
 --TechConnect
 
@@ -337,22 +336,22 @@ values (65, 'Financial Analyst', 'Analyzing financial data, preparing reports, f
 
 
 insert into uni_user
-values (1, 'Charlotte', 'Hale', '08-01-2002', 'F', '-', 'ch@example.com', '-', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80', 'Keramikos, Athens', null);
+values (1, 'Charlotte', 'Hale', '-', 'ch@example.com',  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80', 'Keramikos, Athens', null);
 
 insert into uni_user
-values (2, 'Adam', 'Cuppy', '08-01-2002', 'M', '-', 'ac@example.com', '-', 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80', 'Megaro Mousikis, Athens', null);
+values (2, 'Adam', 'Cuppy','ac@example.com', '-', 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=512&h=512&q=80', 'Megaro Mousikis, Athens', null);
 
 insert into uni_user
-values (3, 'Silvester', 'Wize', '08-01-2002', 'M', '-', 'aw@example.com', '-', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80', 'Zografou, Athens', null);
+values (3, 'Silvester', 'Wize', 'aw@example.com', '-', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=3.25&w=512&h=512&q=80', 'Zografou, Athens', null);
 
 insert into uni_user
-values (4, 'Himali', 'Turn', '08-01-2002', 'F', '-', 'ht@example.com', '-', 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=2.95&w=512&h=512&q=80', 'Aegaleo, Athens', null);
+values (4, 'Himali', 'Turn', 'ht@example.com', '-', 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=2.95&w=512&h=512&q=80', 'Aegaleo, Athens', null);
 
 insert into uni_user
-values (5, 'Troye', 'Turn', '08-01-2002', 'M', '-', 'tt@example.com', '-', 'https://images.unsplash.com/photo-1546820389-44d77e1f3b31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=3.45&w=512&h=512&q=80', 'Aegaleo, Athens', null);
+values (5, 'Troye', 'Turn', 'tt@example.com', '-', 'https://images.unsplash.com/photo-1546820389-44d77e1f3b31?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=3.45&w=512&h=512&q=80', 'Aegaleo, Athens', null);
 
 insert into uni_user
-values (6, 'Holo', 'Wo', '08-01-2002', 'F', '-', 'hw@example.com', '-', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=3.45&w=512&h=512&q=80', 'Zografou, Athens', null);
+values (6, 'Holo', 'Wo', 'hw@example.com', '-', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&fit=facearea&facepad=3.45&w=512&h=512&q=80', 'Zografou, Athens', null);
 
 
 --User 1 Vol 1 Pos 50, Event Organizer for Event 1 PlanBiz
