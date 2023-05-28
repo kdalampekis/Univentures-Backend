@@ -87,6 +87,7 @@ def get_all_categories(request):
                 "value": category.categ_name,
                 "label": category.categ_apr})
 
+
     return Response(categories_dict)
 
 
