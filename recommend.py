@@ -124,8 +124,7 @@ def generate_recommendations(user_id, cursor, N=2):
     try :
         user_preferences = fetch_user_preferences_from_database(cursor, user_id)
         user_ratings = fetch_user_ratings_from_database(user_id)
-        event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(
-            cursor)
+        event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
 
         # Fetch user's location and university_id from database
         user_location = fetch_user_location_from_database(cursor, user_id)

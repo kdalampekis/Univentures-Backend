@@ -20,5 +20,5 @@ urlpatterns = [
     path('get_uni/', views.get_uni),
     path('login/', views.login),
     path('volunteer/', views.volunteer),
-
+    path('post_rating/', views.post_rating),
 ]

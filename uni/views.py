@@ -434,3 +434,45 @@ def volunteer(request):
     return Response({'message': 'Received'}, status=200)
 
 
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import User, Events, EventsUser
+
+@api_view(['POST'])
+def post_rating(request):
+    # Get the data from the request
+    user_id = request.data.get('user_id')
+    event_id = request.data.get('event_id')
+    rating = request.data.get('rating')
+
+    # Validate the data
+    if not all([user_id, event_id, rating]):
+        return Response({'message': 'Missing data in request'}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        # Try to get the user and event instances
+        user = User.objects.get(pk=user_id)
+        event = Events.objects.get(pk=event_id)
+
+        # Get or create the EventsUser object
+        event_user, created = EventsUser.objects.get_or_create(
+            user=user,
+            events=event,
+            defaults={'user_rating': rating}
+        )
+
+        # If the object was not created, that means it already existed and we just update the rating
+        if not created:
+            event_user.user_rating = rating
+            event_user.save()
+
+        return Response({'message': 'Received'}, status=status.HTTP_200_OK)
+
+    except User.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Events.DoesNotExist:
+        return Response({'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
