@@ -2,7 +2,7 @@ from datetime import datetime
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Events, Categories, EventsOrganization, \
-    EventsCategories, Features, Faq, Postitions, Testimonials, Volunteer, User, University
+    EventsCategories, Features, Faq, Postitions, Testimonials, Volunteer, User, University, EventsUser
 from django.db.models import Max
 from django.core import serializers
 from django.utils import timezone
@@ -16,32 +16,26 @@ from recommend import m
 
 @api_view(['POST'])
 def get_popular(request):
+    try:
+        user_id = request.data['user_id']
+        user = User.objects.get(pk=user_id)
+        recommended = m(user.id)
+        print(recommended)
+        serialized_events = []
+        for event_id in recommended:
+            event = Events.objects.get(pk=event_id)
+            serialized_events.append({
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'location': event.location,
+                'price': event.price,
+                'rating': event.rating,
+                'imgSrc': event.img_src,
+            })
 
-    user_id = request.data['user_id']
-
-    if user_id is not None:
-        try:
-            user = User.objects.get(pk=user_id)
-            recommended = m(user.id)
-            print(recommended)
-            serialized_events = []
-            for event_id in recommended:
-                event = Events.objects.get(pk=event_id)
-                serialized_events.append({
-                    'id': event.id,
-                    'title': event.title,
-                    'description': event.description,
-                    'location': event.location,
-                    'price': event.price,
-                    'rating': event.rating,
-                    'imgSrc': event.img_src,
-                })
-
-            return Response(serialized_events)
-
-        except User.DoesNotExist:
-            print('Could not find user 1')
-    else:
+        return Response(serialized_events)
+    except:
         # Retrieve the four events with the highest rating
         highest_rated_events = Events.objects.annotate(max_rating=Max('rating')).order_by('-max_rating')[:4]
 
@@ -433,11 +427,6 @@ def volunteer(request):
 
     return Response({'message': 'Received'}, status=200)
 
-
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import User, Events, EventsUser
 
 @api_view(['POST'])
 def post_rating(request):

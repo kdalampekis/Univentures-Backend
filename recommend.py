@@ -124,9 +124,7 @@ def generate_recommendations(user_id, cursor, N=2):
     user_preferences = fetch_user_preferences_from_database(cursor, user_id)
     user_ratings = fetch_user_ratings_from_database(user_id)
     event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
-
-
-
+    print(user_ratings)
     user_university_id = fetch_user_university_id_from_database(cursor, user_id)
 
     # TF-IDF vectorization of event descriptions and user preferences
@@ -147,8 +145,8 @@ def generate_recommendations(user_id, cursor, N=2):
         (1, event_university_matrix.shape[1]))
 
     # Calculate cosine similarity
-    event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.4
-    event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.3
+    event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.2
+    event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.2
 
     # Ratings
     event_user_ratings = np.zeros(len(event_ids))
@@ -159,7 +157,7 @@ def generate_recommendations(user_id, cursor, N=2):
             event_user_ratings[event_index] = user_ratings[event_id]
 
     ratings_scaler = MinMaxScaler()
-    event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.2
+    event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.5
 
     # Total similarity score
     try:
