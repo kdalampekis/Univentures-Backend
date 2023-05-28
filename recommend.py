@@ -121,119 +121,66 @@ def fetch_user_ratings_from_database(user_id):
 # Generate recommendations for the specified user
 def generate_recommendations(user_id, cursor, N=2):
 
-    try :
-        user_preferences = fetch_user_preferences_from_database(cursor, user_id)
-        user_ratings = fetch_user_ratings_from_database(user_id)
-        event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
+    user_preferences = fetch_user_preferences_from_database(cursor, user_id)
+    user_ratings = fetch_user_ratings_from_database(user_id)
+    event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
 
+
+
+    user_university_id = fetch_user_university_id_from_database(cursor, user_id)
+
+    # TF-IDF vectorization of event descriptions and user preferences
+    event_descriptions = [desc + ' ' + cat for desc, cat in zip(event_descriptions, event_categories)]
+    tfidf_vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=2)
+    event_description_matrix = tfidf_vectorizer.fit_transform(event_descriptions)
+
+    user_descriptions = ' '.join(user_preferences)
+    user_description_matrix = tfidf_vectorizer.transform([user_descriptions])
+
+    # One-hot encoding of location and university_id
+    university_id_encoder = OneHotEncoder()
+
+    event_university_matrix = university_id_encoder.fit_transform(np.array(event_university_id).reshape(-1, 1))
+
+    user_university_matrix = university_id_encoder.transform(
+        np.array([user_university_id]).reshape(-1, 1)) if user_university_id else sp.csr_matrix(
+        (1, event_university_matrix.shape[1]))
+
+    # Calculate cosine similarity
+    event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.4
+    event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.3
+
+    # Ratings
+    event_user_ratings = np.zeros(len(event_ids))
+
+    for event_id in user_ratings.keys():
+        if event_id in event_ids:
+            event_index = event_ids.index(event_id)
+            event_user_ratings[event_index] = user_ratings[event_id]
+
+    ratings_scaler = MinMaxScaler()
+    event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.2
+
+    # Total similarity score
+    try:
         # Fetch user's location and university_id from database
         user_location = fetch_user_location_from_database(cursor, user_id)
-        user_university_id = fetch_user_university_id_from_database(cursor, user_id)
-
-        # TF-IDF vectorization of event descriptions and user preferences
-        event_descriptions = [desc + ' ' + cat for desc, cat in zip(event_descriptions, event_categories)]
-        tfidf_vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=2)
-        event_description_matrix = tfidf_vectorizer.fit_transform(event_descriptions)
-
-        user_descriptions = ' '.join(user_preferences)
-        user_description_matrix = tfidf_vectorizer.transform([user_descriptions])
-
-        # One-hot encoding of location and university_id
         location_encoder = OneHotEncoder()
-        university_id_encoder = OneHotEncoder()
-
         event_location_matrix = location_encoder.fit_transform(np.array(event_locations).reshape(-1, 1))
-        event_university_matrix = university_id_encoder.fit_transform(np.array(event_university_id).reshape(-1, 1))
-
-        user_location_matrix = location_encoder.transform(
-            np.array([user_location]).reshape(-1, 1)) if user_location else sp.csr_matrix(
-            (1, event_location_matrix.shape[1]))
-        user_university_matrix = university_id_encoder.transform(
-            np.array([user_university_id]).reshape(-1, 1)) if user_university_id else sp.csr_matrix(
-            (1, event_university_matrix.shape[1]))
-
-        # Calculate cosine similarity
-        event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.4
+        user_location_matrix = location_encoder.transform(np.array([user_location]).reshape(-1, 1)) if user_location else sp.csr_matrix(
+        (1, event_location_matrix.shape[1]))
         event_user_similarity_loc = cosine_similarity(user_location_matrix, event_location_matrix) * 0.1
-        event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.3
-
-        # Ratings
-        event_user_ratings = np.zeros(len(event_ids))
-
-        for event_id in user_ratings.keys():
-            if event_id in event_ids:
-                event_index = event_ids.index(event_id)
-                event_user_ratings[event_index] = user_ratings[event_id]
-
-        ratings_scaler = MinMaxScaler()
-        event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.2
-
-        # Total similarity score
         event_total_similarity = event_user_similarity_pref.flatten() + event_user_similarity_loc.flatten() + event_user_similarity_uni.flatten() + event_user_ratings
-
-        # Get the top N event indices based on total similarity score
-        top_n_event_indices = np.argsort(event_total_similarity)[::-1][:N]
-
-        # Get the top N recommended event ids
-        recommended_events = [event_ids[i] for i in top_n_event_indices]
-
-        return recommended_events
     except:
-        user_preferences = fetch_user_preferences_from_database(cursor, user_id)
-        user_ratings = fetch_user_ratings_from_database(user_id)
-        event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
+        event_total_similarity = event_user_similarity_pref.flatten() + event_user_similarity_uni.flatten() + event_user_ratings
 
-        # Fetch user's location and university_id from database
-        #user_location = fetch_user_location_from_database(cursor, user_id)
-        user_university_id = fetch_user_university_id_from_database(cursor, user_id)
+    # Get the top N event indices based on total similarity score
+    top_n_event_indices = np.argsort(event_total_similarity)[::-1][:N]
 
-        # TF-IDF vectorization of event descriptions and user preferences
-        event_descriptions = [desc + ' ' + cat for desc, cat in zip(event_descriptions, event_categories)]
-        tfidf_vectorizer = TfidfVectorizer(ngram_range=(1, 2), min_df=2)
-        event_description_matrix = tfidf_vectorizer.fit_transform(event_descriptions)
+    # Get the top N recommended event ids
+    recommended_events = [event_ids[i] for i in top_n_event_indices]
 
-        user_descriptions = ' '.join(user_preferences)
-        user_description_matrix = tfidf_vectorizer.transform([user_descriptions])
-
-        # One-hot encoding of location and university_id
-        location_encoder = OneHotEncoder()
-        university_id_encoder = OneHotEncoder()
-
-        event_location_matrix = location_encoder.fit_transform(np.array(event_locations).reshape(-1, 1))
-        event_university_matrix = university_id_encoder.fit_transform(np.array(event_university_id).reshape(-1, 1))
-
-        #user_location_matrix = location_encoder.transform(np.array([user_location]).reshape(-1, 1)) if user_location else sp.csr_matrix((1, event_location_matrix.shape[1]))
-        user_university_matrix = university_id_encoder.transform(np.array([user_university_id]).reshape(-1, 1)) if user_university_id else sp.csr_matrix((1, event_university_matrix.shape[1]))
-
-        # Calculate cosine similarity
-        event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.4
-        #event_user_similarity_loc = cosine_similarity(user_location_matrix, event_location_matrix) * 0.1
-        event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.3
-
-        # Ratings
-        event_user_ratings = np.zeros(len(event_ids))
-
-        for event_id in user_ratings.keys():
-            if event_id in event_ids:
-                event_index = event_ids.index(event_id)
-                event_user_ratings[event_index] = user_ratings[event_id]
-
-        ratings_scaler = MinMaxScaler()
-        event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.2
-
-        # Total similarity score
-        event_total_similarity = event_user_similarity_pref.flatten() + event_user_similarity_uni.flatten()
-
-        # Get the top N event indices based on total similarity score
-        top_n_event_indices = np.argsort(event_total_similarity)[::-1][:N]
-
-        # Get the top N recommended event ids
-        recommended_events = [event_ids[i] for i in top_n_event_indices]
-
-
-
-        return recommended_events
-
+    return recommended_events
 
 
 # Entry point of the script
