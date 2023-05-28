@@ -11,27 +11,57 @@ from django.core.exceptions import ObjectDoesNotExist
 import random
 from .serializers import UserSerializer, UsersCategoriesSerializer, VolunteerSerializer
 from rest_framework import status
+from recommend import m
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def get_popular(request):
-    # Retrieve the four events with the highest rating
-    highest_rated_events = Events.objects.annotate(max_rating=Max('rating')).order_by('-max_rating')[:4]
 
-    # Serialize the events data
-    serialized_events = []
-    for event in highest_rated_events:
-        serialized_events.append({
-            'id': event.id,
-            'title': event.title,
-            'description': event.description,
-            'location': event.location,
-            'price': event.price,
-            'rating': event.rating,
-            'imgSrc': event.img_src,
-        })
+    user_id = request.data['user_id']
 
-    return Response(serialized_events)
+    if user_id is not None:
+        try:
+            user = User.objects.get(pk=user_id)
+            recommended = m(user.id)
+            print(recommended)
+            serialized_events = []
+            for event_id in recommended:
+                event = Events.objects.get(pk=event_id)
+                serialized_events.append({
+                    'id': event.id,
+                    'title': event.title,
+                    'description': event.description,
+                    'location': event.location,
+                    'price': event.price,
+                    'rating': event.rating,
+                    'imgSrc': event.img_src,
+                })
+
+            return Response(serialized_events)
+
+        except User.DoesNotExist:
+            print('Could not find user 1')
+    else:
+        # Retrieve the four events with the highest rating
+        highest_rated_events = Events.objects.annotate(max_rating=Max('rating')).order_by('-max_rating')[:4]
+
+        # Serialize the events data
+        serialized_events = []
+        for event in highest_rated_events:
+            serialized_events.append({
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'location': event.location,
+                'price': event.price,
+                'rating': event.rating,
+                'imgSrc': event.img_src,
+            })
+
+        return Response(serialized_events)
+
+
+
 
 
 @api_view(['GET'])
