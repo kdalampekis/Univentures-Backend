@@ -12,6 +12,7 @@ import random
 from .serializers import UserSerializer, UsersCategoriesSerializer, VolunteerSerializer
 from rest_framework import status
 from recommend import m
+import json
 
 
 @api_view(['POST'])
@@ -463,5 +464,21 @@ def post_rating(request):
     except Events.DoesNotExist:
         return Response({'message': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
 
+
+@api_view()
+def get_rating(request):
+    print(request.GET)
+
+    user_id = request.GET.get('user_id')
+    event_id = request.GET.get('event_id')
+
+    user = get_object_or_404(User, pk=user_id)
+    event = get_object_or_404(Events, pk=event_id)
+
+    try:
+        event_user = EventsUser.objects.get(events=event, user=user)
+        return Response({'message': 'Received', 'rating': event_user.user_rating}, status=status.HTTP_200_OK)
+    except EventsUser.DoesNotExist:
+        return Response({'message': 'No matching event-user found'}, status=status.HTTP_404_NOT_FOUND)
 
 

@@ -21,4 +21,6 @@ urlpatterns = [
     path('login/', views.login),
     path('volunteer/', views.volunteer),
     path('post_rating/', views.post_rating),
+    path('get_rating/', views.get_rating),
+
 ]
