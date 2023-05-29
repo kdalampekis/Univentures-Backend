@@ -36,7 +36,7 @@ def fetch_user_preferences_from_database(cursor, user_id):
 
 
 # Fetch event data from the database
-def fetch_event_data_from_database(cursor):
+def fetch_event_data_from_database(cursor, ev_ids):
     cursor.execute("""
         SELECT main.uni_events.id, description, location, main.uni_events.university_id
         FROM uni_events
@@ -50,28 +50,29 @@ def fetch_event_data_from_database(cursor):
     event_university_id = []
 
     for event in event_data:
-        event_ids.append(event[0])
-        event_descriptions.append(event[1])
-        event_locations.append(event[2])
-        event_university_id.append(event[3])
+        if event[0] not in ev_ids:
+            event_ids.append(event[0])
+            event_descriptions.append(event[1])
+            event_locations.append(event[2])
+            event_university_id.append(event[3])
 
-        cursor.execute("""
-            SELECT main.eventscategories.categories_id
-            FROM eventscategories
-            WHERE main.eventscategories.events_id = ?
-        """, (event[0],))
-
-        category_ids = cursor.fetchall()
-
-        for category_id in category_ids:
             cursor.execute("""
-                SELECT main.uni_categories.categ_name
-                FROM uni_categories
-                WHERE main.uni_categories.id = ?
-            """, (category_id[0],))
-            category_name = cursor.fetchone()
-            if category_name:
-                event_categories.append(category_name[0])
+                SELECT main.eventscategories.categories_id
+                FROM eventscategories
+                WHERE main.eventscategories.events_id = ?
+            """, (event[0],))
+
+            category_ids = cursor.fetchall()
+
+            for category_id in category_ids:
+                cursor.execute("""
+                    SELECT main.uni_categories.categ_name
+                    FROM uni_categories
+                    WHERE main.uni_categories.id = ?
+                """, (category_id[0],))
+                category_name = cursor.fetchone()
+                if category_name:
+                    event_categories.append(category_name[0])
 
     return event_ids, event_descriptions, event_categories, event_locations, event_university_id
 
@@ -107,23 +108,31 @@ def fetch_user_ratings_from_database(user_id):
         FROM eventsuser 
         WHERE main.eventsuser.user_id=?
     """, (user_id,))
+
     ratings_data = cursor.fetchall()
+
     if ratings_data:
         user_ratings = {rating[0]: rating[1] for rating in ratings_data}
     else:
         user_ratings = {}
 
+    event_ids = []
+    for i in range(len(ratings_data)):
+        print(ratings_data[i])
+        if ratings_data[i][1] == 1:
+            event_ids.append(ratings_data[i][0])
+
     cursor.close()
     conn.close()
 
-    return user_ratings
+    return user_ratings, event_ids
 
 # Generate recommendations for the specified user
 def generate_recommendations(user_id, cursor, N=2):
 
     user_preferences = fetch_user_preferences_from_database(cursor, user_id)
-    user_ratings = fetch_user_ratings_from_database(user_id)
-    event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor)
+    user_ratings, ev_ids = fetch_user_ratings_from_database(user_id)
+    event_ids, event_descriptions, event_categories, event_locations, event_university_id = fetch_event_data_from_database(cursor, ev_ids)
     print(user_ratings)
     user_university_id = fetch_user_university_id_from_database(cursor, user_id)
 
@@ -145,8 +154,8 @@ def generate_recommendations(user_id, cursor, N=2):
         (1, event_university_matrix.shape[1]))
 
     # Calculate cosine similarity
-    event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.2
-    event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.2
+    event_user_similarity_pref = cosine_similarity(user_description_matrix, event_description_matrix) * 0.3
+    event_user_similarity_uni = cosine_similarity(user_university_matrix, event_university_matrix) * 0.3
 
     # Ratings
     event_user_ratings = np.zeros(len(event_ids))
@@ -157,7 +166,7 @@ def generate_recommendations(user_id, cursor, N=2):
             event_user_ratings[event_index] = user_ratings[event_id]
 
     ratings_scaler = MinMaxScaler()
-    event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.5
+    event_user_ratings = ratings_scaler.fit_transform(event_user_ratings.reshape(-1, 1)).flatten() * 0.3
 
     # Total similarity score
     try:
